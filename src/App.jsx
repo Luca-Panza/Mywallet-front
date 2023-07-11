@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import styled from "styled-components"
+import { AppProvider } from './context/AppContext';
 import HomePage from "./pages/HomePage"
 import SignInPage from "./pages/SignInPage"
 import SignUpPage from "./pages/SignUpPage"
@@ -9,12 +10,14 @@ export default function App() {
   return (
     <PagesContainer>
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<SignInPage />} />
-          <Route path="/cadastro" element={<SignUpPage />} />
-          <Route path="/home" element={<HomePage />} />
-          <Route path="/nova-transacao/:tipo" element={<TransactionsPage />} />
-        </Routes>
+        <AppProvider>
+          <Routes>
+            <Route path="/" element={<SignInPage />} />
+            <Route path="/signUp" element={<SignUpPage />} />
+            <Route path="/transactions" element={<HomePage />} />
+            <Route path="/new-transaction/:type" element={<TransactionsPage />} />
+          </Routes>
+        </AppProvider>
       </BrowserRouter>
     </PagesContainer>
   )
