@@ -1,6 +1,6 @@
 import axios from "axios";
 import styled from "styled-components";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useState, useContext, useEffect } from "react";
 import { AppContext } from '/src/context/AppContext';
 
@@ -12,25 +12,25 @@ export default function TransactionsPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (type !== "entrada" && type !== "saida") return navigate('/transactions');
+    if (type !== "income" && type !== "expense") return navigate('/transactions');
     if (!user || !user.token) return navigate('/');
   }, []);
 
   function createTransaction(ev) {
     ev.preventDefault();
 
-    const config = { headers: { token: user.token } };
-    const reqBody = { description, amount };
+    const config = { headers: { Authorization: user.token } };
+    const reqBody = { description, amount: parseFloat(amount) };
 
     axios
       .post(`${import.meta.env.VITE_API_URL}/new-transaction/${type}`, reqBody, config)
-      .then(res => navigate('/home'))
+      .then(res => navigate('/transactions'))
       .catch(e => alert(e.response.data));
   }
 
   return (
     <TransactionsContainer>
-      <h1>{`Nova ${type}`}</h1>
+      <h1>{`New ${type}`}</h1>
       <form onSubmit={createTransaction}>
         <input
           placeholder="Amount"

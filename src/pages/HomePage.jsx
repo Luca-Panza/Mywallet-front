@@ -13,16 +13,16 @@ export default function HomePage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const config = { headers: { token: user.token } };
+    const config = { headers: { Authorization: user.token } };
 
     axios
       .get(`${import.meta.env.VITE_API_URL}/transactions`, config)
       .then((res) => {
-        setTransactions(res.data);
+        setTransactions(res.data.slice(0, 20));
         const totalBalance = res.data.reduce(
           (total, transaction) =>
             total +
-            (transaction.type === "entrada"
+            (transaction.type === "income"
               ? transaction.amount
               : -transaction.amount),
           0
@@ -35,8 +35,8 @@ export default function HomePage() {
   return (
     <HomeContainer>
       <Header>
-        <h1 data-test="user-name">Olá, {user.name}</h1>
-        <BiExit 
+        <h1 data-test="user-name">Hello, {user.name}!</h1>
+        <ExitIcon 
           data-test="logout"
           onClick={() => {
             localStorage.removeItem("user");
@@ -50,12 +50,14 @@ export default function HomePage() {
           {transactions.map((transaction) => (
             <ListItemContainer key={transaction._id}>
               <div>
-                <span>{transaction.date}</span>
+                <span>
+                  {new Date(transaction.date).toLocaleDateString("en-US", { month: "numeric", day: "numeric" })}
+                </span>
                 <strong data-test="registry-name">{transaction.description}</strong>
               </div>
               <div style={{ display: "flex", gap: "10px" }}>
-                <Value data-test="registry-amount" color={transaction.type === "entrada" ? "true" : "false"}>
-                  {String(transaction.amount).replace(".", ",")}
+                <Value data-test="registry-amount" color={transaction.type === "income" ? "true" : "false"}>
+                  {transaction.amount.toFixed(2).replace(".", ",")}
                 </Value>
               </div>
             </ListItemContainer>
@@ -63,26 +65,26 @@ export default function HomePage() {
         </ul>
 
         <article>
-          <strong>Saldo</strong>
-          <Value data-test="total-amount" color={balance >= 0 ? "true" : "false"}>{balance.toFixed(2)}</Value>
+          <strong>Balance</strong>
+          <Value data-test="total-amount" color={balance >= 0 ? "true" : "false"}>{balance.toFixed(2).replace(".", ",")}</Value>
         </article>
       </TransactionsContainer>
 
       <ButtonsContainer>
-        <button data-test="new-income" onClick={() => navigate("/new-transaction/entrada")}>
+        <button data-test="new-income" onClick={() => navigate("/new-transaction/income")}>
           <AiOutlinePlusCircle />
           <p>
-            Nova
+            New
             <br />
-            entrada
+            Income
           </p>
         </button>
-        <button data-test="new-expense" onClick={() => navigate("/new-transaction/saida")}>
+        <button data-test="new-expense" onClick={() => navigate("/new-transaction/expense")}>
           <AiOutlineMinusCircle />
           <p>
-            Nova
+            New
             <br />
-            saída
+            Expense
           </p>
         </button>
       </ButtonsContainer>
@@ -103,6 +105,9 @@ const Header = styled.header`
   margin-bottom: 15px;
   font-size: 26px;
   color: white;
+`;
+const ExitIcon = styled(BiExit)`
+  cursor: pointer;
 `;
 const TransactionsContainer = styled.article`
   flex-grow: 1;
@@ -138,6 +143,9 @@ const ButtonsContainer = styled.section`
     justify-content: space-between;
     p {
       font-size: 18px;
+    }
+    &:hover {
+      opacity: 0.8;
     }
   }
 `;

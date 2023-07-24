@@ -2,6 +2,7 @@ import axios from "axios";
 import styled from "styled-components"
 import { Link, useNavigate} from "react-router-dom"
 import { useState, useContext } from "react";
+import { ThreeDots } from 'react-loader-spinner';
 import MyWalletLogo from "../components/MyWalletLogo"
 import { AppContext } from '/src/context/AppContext';
 
@@ -11,9 +12,11 @@ export default function SignInPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState( false );
 
   function confirmLogin (e) {
 		e.preventDefault();
+    setLoading( true );
 
     axios.post(`${import.meta.env.VITE_API_URL}/signIn`, {email, password})
 
@@ -23,7 +26,7 @@ export default function SignInPage() {
           localStorage.setItem("user", JSON.stringify(res.data));
           navigate("/transactions")
           }) 
-        .catch(error => alert(error.response.data.message));
+        .catch(e => alert(e.response.data.message));
 
     }
 
@@ -58,9 +61,12 @@ export default function SignInPage() {
 }
 
 const SingInContainer = styled.section`
-  height: 100vh;
+  height: calc(100vh - 50px);
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-`
+  button:hover {
+    opacity: 0.8;
+  }
+`;

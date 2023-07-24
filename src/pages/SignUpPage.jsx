@@ -20,7 +20,7 @@ export default function SignUpPage() {
       axios.post(`${import.meta.env.VITE_API_URL}/signUp`, {name, email, password:password1})
 
         .then((res) => {alert(res.data); navigate("/")}) 
-        .catch(error => alert(error.response.data.message));
+        .catch(e => alert(e.response.data.message));
     }
 
   return (
@@ -42,9 +42,12 @@ export default function SignUpPage() {
 }
 
 const SingUpContainer = styled.section`
-  height: 100vh;
+  height: calc(100vh - 50px);
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  button:hover {
+    opacity: 0.8;
+  }
 `
