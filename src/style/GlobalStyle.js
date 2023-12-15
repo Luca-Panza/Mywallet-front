@@ -32,6 +32,7 @@ const GlobalStyle = createGlobalStyle`
         border: 1px solid #ccc;
         padding: 15px;
         margin: 1px;
+        color: #fff;
         :focus {
             border: 2px solid #ffb6b6;
             margin: 0px;

@@ -29,6 +29,16 @@ export default function TransactionsPage() {
       .catch(e => alert(e.response.data));
   }
 
+  function handleDescriptionChange(ev) {
+    const words = ev.target.value.split(/\s+/);
+    const areAllWordsValid = words.every(word => word.length <= 25);
+    if (areAllWordsValid) {
+      setDescription(ev.target.value);
+    } else {
+      alert("Each word must be 25 characters or less."); 
+    }
+  }
+
   return (
     <TransactionsContainer>
       <h1>{`New ${type}`}</h1>
@@ -47,7 +57,7 @@ export default function TransactionsPage() {
           type="text"
           required
           minLength={4}
-          onChange={(ev) => setDescription(ev.target.value)}
+          onChange={handleDescriptionChange}
           value={description}
           data-test="registry-name-input"
         />
