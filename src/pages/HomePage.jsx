@@ -4,6 +4,7 @@ import { BiExit } from "react-icons/bi";
 import { AiOutlineMinusCircle, AiOutlinePlusCircle } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 import { useState, useContext, useEffect } from "react";
+
 import { AppContext } from "/src/context/AppContext";
 
 export default function HomePage() {
@@ -97,6 +98,7 @@ const HomeContainer = styled.div`
   flex-direction: column;
   height: calc(100vh - 50px);
 `;
+
 const Header = styled.header`
   display: flex;
   align-items: center;
@@ -105,14 +107,17 @@ const Header = styled.header`
   margin-bottom: 15px;
   font-size: 26px;
   color: white;
+  user-select: none;
 `;
+
 const ExitIcon = styled(BiExit)`
   cursor: pointer;
 `;
+
 const TransactionsContainer = styled.article`
   flex-grow: 1;
-  background-color: #fff;
-  color: #000;
+  background-color: #1D1C19;
+  color: #fff;
   border-radius: 5px;
   padding: 16px;
   display: flex;
@@ -121,12 +126,14 @@ const TransactionsContainer = styled.article`
   article {
     display: flex;
     justify-content: space-between;
+    user-select: none;
     strong {
       font-weight: 700;
       text-transform: uppercase;
     }
   }
 `;
+
 const ButtonsContainer = styled.section`
   margin-top: 15px;
   margin-bottom: 0;
@@ -141,6 +148,7 @@ const ButtonsContainer = styled.section`
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    user-select: none;
     p {
       font-size: 18px;
     }
@@ -149,18 +157,21 @@ const ButtonsContainer = styled.section`
     }
   }
 `;
+
 const Value = styled.div`
   font-size: 16px;
   text-align: right;
-  color: ${(props) => (props.color === "true" ? "green" : "red")};
+  color: ${(props) => (props.color === "true" ? "#05720B" : "#8E2F21")};
 `;
+
 const ListItemContainer = styled.li`
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 8px;
-  color: #000000;
+  color: #fff;
   margin-right: 10px;
+  user-select: none;
   div span {
     color: #c6c6c6;
     margin-right: 10px;

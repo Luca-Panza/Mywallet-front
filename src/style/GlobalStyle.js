@@ -10,7 +10,7 @@ const GlobalStyle = createGlobalStyle`
         outline: none;
         border: none;
         border-radius: 5px;
-        background-color: #a328d6;
+        background-color: #77407B;
         font-size: 20px;
         font-weight: 600;
         color: #fff;
@@ -27,6 +27,7 @@ const GlobalStyle = createGlobalStyle`
         font-size: 20px;
         width: calc(100% - 30px);
         border-radius: 5px;
+        background-color:#1D1C19;
         outline: none;
         border: 1px solid #ccc;
         padding: 15px;
@@ -52,7 +53,8 @@ const GlobalStyle = createGlobalStyle`
         color: white;
         text-decoration: none;
         padding-top: 30px;
+        user-select: none;
     }
-`
+`;
 
-export default GlobalStyle
+export default GlobalStyle;

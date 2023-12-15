@@ -2,6 +2,7 @@ import axios from "axios";
 import styled from "styled-components";
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useContext, useEffect } from "react";
+
 import { AppContext } from '/src/context/AppContext';
 
 export default function TransactionsPage() {
@@ -62,7 +63,7 @@ const TransactionsContainer = styled.main`
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-
+  user-select: none;
   h1 {
     align-self: flex-start;
     margin-bottom: 40px;

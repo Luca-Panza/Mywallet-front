@@ -3,6 +3,7 @@ import styled from "styled-components"
 import { Link, useNavigate} from "react-router-dom"
 import { useState, useContext } from "react";
 import { ThreeDots } from 'react-loader-spinner';
+
 import MyWalletLogo from "../components/MyWalletLogo"
 import { AppContext } from '/src/context/AppContext';
 
@@ -61,6 +62,7 @@ export default function SignInPage() {
 }
 
 const SingInContainer = styled.section`
+  user-select: none;
   height: calc(100vh - 50px);
   display: flex;
   flex-direction: column;
