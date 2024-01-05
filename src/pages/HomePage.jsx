@@ -1,5 +1,6 @@
 import axios from "axios";
 import styled from "styled-components";
+import Swal from "sweetalert2";
 import { BiExit } from "react-icons/bi";
 import { AiOutlineMinusCircle, AiOutlinePlusCircle } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
@@ -43,6 +44,15 @@ export default function HomePage() {
           onClick={() => {
             localStorage.removeItem("user");
             navigate("/");
+            Swal.fire({
+              title: 'Logged Out',
+              text: 'You have been successfully logged out.',
+              icon: 'info',
+              confirmButtonText: 'Ok',
+              background: '#fff',
+              color: '#2d2d2d',
+              confirmButtonColor: '#77407B'
+          });
           }}
         />
       </Header>

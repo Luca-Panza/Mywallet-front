@@ -1,4 +1,4 @@
-import { createGlobalStyle } from "styled-components"
+import { createGlobalStyle } from "styled-components";
 
 const ResetStyle = createGlobalStyle`
     html, body, div, span, applet, object, iframe,
@@ -44,6 +44,35 @@ const ResetStyle = createGlobalStyle`
 		border-collapse: collapse;
 		border-spacing: 0;
 	}
-`
+	.swal2-title {
+  font-family: 'Poppins', sans-serif;
+	}
+	.swal2-html-container {
+	font-family: 'Poppins', sans-serif;
+	}
+	.swal2-confirm {
+	font-family: 'Poppins', sans-serif;
+	}
+	div.swal2-icon.swal2-error.swal2-icon-show{
+  margin: 2.5em auto .6em;
+  border: 0.25em solid rgba(0, 0, 0, 0);
+  border-color: #F27474;
+	}
+	div.swal2-icon.swal2-success.swal2-icon-show{
+  margin: 2.5em auto .6em;
+  border: 0.25em solid rgba(0, 0, 0, 0);
+  border-color: #74F299;
+	}
+	div.swal2-icon.swal2-info.swal2-icon-show{
+  margin: 2.5em auto .6em;
+  border: 0.25em solid rgba(0, 0, 0, 0);
+  border-color: #3fc3ee;
+	}
+	div.swal2-icon.swal2-warning.swal2-icon-show{
+  margin: 2.5em auto .6em;
+  border: 0.25em solid rgba(0, 0, 0, 0);
+  border-color: #f8bb86;
+	}
+`;
 
-export default ResetStyle
+export default ResetStyle;

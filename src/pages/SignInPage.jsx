@@ -1,8 +1,8 @@
 import axios from "axios";
 import styled from "styled-components"
+import Swal from 'sweetalert2';
 import { Link, useNavigate} from "react-router-dom"
 import { useState, useContext } from "react";
-import { ThreeDots } from 'react-loader-spinner';
 
 import MyWalletLogo from "../components/MyWalletLogo"
 import { AppContext } from '/src/context/AppContext';
@@ -26,8 +26,28 @@ export default function SignInPage() {
           localStorage.removeItem("user");
           localStorage.setItem("user", JSON.stringify(res.data));
           navigate("/transactions")
+          Swal.fire({
+            title: 'Successful login!',
+            icon: "success",
+            confirmButtonText: 'Ok',
+            background: '#fff',
+            color: '#2d2d2d',
+            confirmButtonColor: '#77407B',
+            timer: 1500
+          });
           }) 
-        .catch(e => alert(e.response.data.message));
+          .catch(e => {
+            Swal.fire({
+              title: 'Incorrect email or password!',
+              icon: "error",
+              confirmButtonText: 'Ok',
+              background: '#fff',
+              color: '#2d2d2d',
+              confirmButtonColor: '#77407B',
+              timer: 1500
+            });
+            setPassword("");
+        });
 
     }
 

@@ -1,5 +1,6 @@
 import axios from "axios";
 import styled from "styled-components";
+import Swal from "sweetalert2";
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useContext, useEffect } from "react";
 
@@ -24,10 +25,33 @@ export default function TransactionsPage() {
     const reqBody = { description, amount: parseFloat(amount) };
 
     axios
-      .post(`${import.meta.env.VITE_API_URL}/new-transaction/${type}`, reqBody, config)
-      .then(res => navigate('/transactions'))
-      .catch(e => alert(e.response.data));
-  }
+        .post(`${import.meta.env.VITE_API_URL}/new-transaction/${type}`, reqBody, config)
+        .then(res => {
+            Swal.fire({
+                title: 'Transaction Created!',
+                icon: "success",
+                confirmButtonText: 'Ok',
+                background: '#fff',
+                color: '#2d2d2d',
+                confirmButtonColor: '#77407B',
+                timer: 1500
+            }).then(() => {
+                navigate('/transactions');
+            });
+        })
+        .catch(e => {
+            Swal.fire({
+                title: 'Error!',
+                text: e.response?.data || 'An error occurred',
+                icon: 'error',
+                confirmButtonText: 'Ok',
+                background: '#fff',
+                color: '#2d2d2d',
+                confirmButtonColor: '#77407B'
+            });
+        });
+}
+
 
   function handleDescriptionChange(ev) {
     const words = ev.target.value.split(/\s+/);

@@ -1,7 +1,8 @@
-import { Link, useNavigate } from "react-router-dom"
 import axios from "axios";
 import styled from "styled-components"
+import Swal from "sweetalert2";
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom"
 
 import MyWalletLogo from "../components/MyWalletLogo"
 
@@ -16,12 +17,41 @@ export default function SignUpPage() {
 
   function confirmRegister (e) {
 		e.preventDefault();
-    if(password !== passwordConfirmation) return alert("Different passwords, try again!");
+    if(password !== passwordConfirmation) 
+      return Swal.fire({
+      title: 'Error!',
+      text: 'Different passwords, try again!',
+      icon: 'error',
+      confirmButtonText: 'Ok',
+      background: '#fff',
+      color: '#2d2d2d',
+      confirmButtonColor: '#77407B',
+      timer: 1500
+    });
       
       axios.post(`${import.meta.env.VITE_API_URL}/signUp`, {name, email, password:password})
 
-        .then((res) => {alert(res.data); navigate("/")}) 
-        .catch(e => alert(e.response.data.message));
+        .then((res) => {
+          Swal.fire({
+            title: 'Account Created!',
+            icon: "success",
+            confirmButtonText: 'Ok',
+            background: '#fff',
+            color: '#2d2d2d',
+            confirmButtonColor: '#77407B',
+            timer: 1500
+          });
+          navigate("/")}) 
+        .catch(e => 
+          Swal.fire({
+            title: 'Error!',
+            icon: 'error',
+            confirmButtonText: 'Ok',
+            background: '#fff',
+            color: '#2d2d2d',
+            confirmButtonColor: '#77407B',
+            timer: 1500
+        }));
     }
 
   return (
