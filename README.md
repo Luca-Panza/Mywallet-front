@@ -22,6 +22,7 @@ Deployment on Render: <a href="https://projeto14-mywallet-front-gray.vercel.app"
 - JavaScript
 - React
 - HTML & CSS
+- SweetAlert2
 - Responsive Design
 - Axios
 - User Authentication
