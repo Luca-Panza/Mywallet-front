@@ -9,25 +9,26 @@
    <img src="https://img.shields.io/github/languages/count/Luca-Panza/projeto14-mywallet-front?color=4dae71&style=flat-square" />
 </p>
 
-
-##  :clipboard: Description
+## :clipboard: Description
 
 MyWallet is a dynamic front-end application for personal finance management. It provides an intuitive interface for users to monitor and manage their financial transactions.
 
 Deployment on Render: <a href="https://projeto14-mywallet-front-gray.vercel.app" target="_blank">MyWallet</a>
-***
 
-## :computer:	 Technologies and Concepts
+---
+
+## :computer: Technologies and Concepts
 
 - JavaScript
 - React
 - HTML & CSS
+- Animate.css
 - SweetAlert2
 - Responsive Design
 - Axios
 - User Authentication
 
-***
+---
 
 ## 🏁 Running the application
 
@@ -47,12 +48,11 @@ Setting Up the .env File:
 
 3. Configure API URLs: Open the .env.example file, where you will see the API URLs:
 
-    - For local connection: VITE_API_URL=http://localhost:5000
+   - For local connection: VITE_API_URL=http://localhost:5000
 
-    - For external connection: VITE_API_URL=http://mywallet-api-njln.onrender.com
-  
+   - For external connection: VITE_API_URL=http://mywallet-api-njln.onrender.com
+
 4. Select and Set URL: Choose either the local or external URL and replace it in your .env file.
-
 
 Then, navigate to the project folder and install the dependencies with the following command:
 
