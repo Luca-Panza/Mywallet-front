@@ -13,7 +13,7 @@
 
 MyWallet is a dynamic front-end application for personal finance management. It provides an intuitive interface for users to monitor and manage their financial transactions.
 
-Deployment on Render: <a href="https://projeto14-mywallet-front-gray.vercel.app" target="_blank">MyWallet</a>
+Deployment on Vercel: <a href="https://projeto14-mywallet-front-gray.vercel.app" target="_blank">MyWallet</a>
 
 ---
 
