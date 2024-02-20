@@ -6,7 +6,7 @@
 
 <p align = "center">
    <img src="https://img.shields.io/badge/author-Luca_Panza-4dae71?style=flat-square" />
-   <img src="https://img.shields.io/github/languages/count/Luca-Panza/projeto14-mywallet-front?color=4dae71&style=flat-square" />
+   <img src="https://img.shields.io/github/languages/count/Luca-Panza/Mywallet-front?color=4dae71&style=flat-square" />
 </p>
 
 ## :clipboard: Description
@@ -37,7 +37,7 @@ Make sure you have the latest stable version of [Node.js](https://nodejs.org/en/
 First, clone this repository on your machine:
 
 ```
-git clone https://github.com/Luca-Panza/projeto14-mywallet-front
+git clone https://github.com/Luca-Panza/Mywallet-front
 ```
 
 Setting Up the .env File:
