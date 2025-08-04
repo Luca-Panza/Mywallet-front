@@ -5,12 +5,14 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useState, useContext, useEffect } from "react";
 
 import { AppContext } from '/src/context/AppContext';
+import CSVImportComponent from '/src/components/CSVImportComponent';
 
 export default function TransactionsPage() {
   const { type } = useParams();
   const { user } = useContext(AppContext);
   const [amount, setAmount] = useState(undefined);
   const [description, setDescription] = useState("");
+  const [showImport, setShowImport] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -52,7 +54,6 @@ export default function TransactionsPage() {
         });
 }
 
-
   function handleDescriptionChange(ev) {
     const words = ev.target.value.split(/\s+/);
     const areAllWordsValid = words.every(word => word.length <= 25);
@@ -63,9 +64,14 @@ export default function TransactionsPage() {
     }
   }
 
+  const handleImportSuccess = () => {
+    navigate('/transactions'); // Redirect to home after successful import
+  };
+
   return (
     <TransactionsContainer>
       <h1>{`New ${type}`}</h1>
+      
       <form onSubmit={createTransaction}>
         <input
           placeholder="Amount"
@@ -87,6 +93,20 @@ export default function TransactionsPage() {
         />
         <button data-test="registry-save">Save Transaction</button>
       </form>
+
+      <ImportToggle>
+        <button 
+          type="button" 
+          onClick={() => setShowImport(!showImport)}
+          className="import-toggle-btn"
+        >
+          {showImport ? 'Hide CSV Import' : 'Import Multiple Transactions from CSV'}
+        </button>
+      </ImportToggle>
+
+      {showImport && (
+        <CSVImportComponent onImportSuccess={handleImportSuccess} />
+      )}
     </TransactionsContainer>
   );
 }
@@ -101,5 +121,27 @@ const TransactionsContainer = styled.main`
   h1 {
     align-self: flex-start;
     margin-bottom: 40px;
+  }
+`;
+
+const ImportToggle = styled.div`
+  margin-top: 20px;
+  width: 100%;
+  
+  .import-toggle-btn {
+    width: 100%;
+    height: 46px;
+    background: transparent;
+    color: white;
+    border: 2px solid #77407B;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s;
+
+    &:hover {
+      background: #77407B;
+      color: white;
+    }
   }
 `;

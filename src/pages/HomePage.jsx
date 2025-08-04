@@ -3,19 +3,22 @@ import styled from "styled-components";
 import Swal from "sweetalert2";
 import { BiExit } from "react-icons/bi";
 import { AiOutlineMinusCircle, AiOutlinePlusCircle } from "react-icons/ai";
+import { FiUpload } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { useState, useContext, useEffect } from "react";
 
 import { AppContext } from "/src/context/AppContext";
 import TransactionsContainer from "/src/components/TransactionsContainer";
+import CSVImportComponent from "/src/components/CSVImportComponent";
 
 export default function HomePage() {
   const { user } = useContext(AppContext);
   const [balance, setBalance] = useState(0.0);
   const [transactions, setTransactions] = useState([]);
+  const [showImport, setShowImport] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
+  const loadTransactions = () => {
     const config = { headers: { Authorization: user.token } };
 
     axios
@@ -33,7 +36,16 @@ export default function HomePage() {
         setBalance(totalBalance);
       })
       .catch((e) => alert(e.response.data));
+  };
+
+  useEffect(() => {
+    loadTransactions();
   }, []);
+
+  const handleImportSuccess = () => {
+    loadTransactions(); // Reload transactions after successful import
+    setShowImport(false); // Hide import component
+  };
 
   return (
     <HomeContainer>
@@ -59,6 +71,10 @@ export default function HomePage() {
 
       <TransactionsContainer transactions={transactions} balance={balance} />
 
+      {showImport && (
+        <CSVImportComponent onImportSuccess={handleImportSuccess} />
+      )}
+
       <ButtonsContainer>
         <button data-test="new-income" onClick={() => navigate("/new-transaction/income")}>
           <AiOutlinePlusCircle />
@@ -74,6 +90,14 @@ export default function HomePage() {
             New
             <br />
             Expense
+          </p>
+        </button>
+        <button data-test="import-csv" onClick={() => setShowImport(!showImport)}>
+          <FiUpload />
+          <p>
+            Import
+            <br />
+            CSV
           </p>
         </button>
       </ButtonsContainer>
@@ -109,7 +133,7 @@ const ButtonsContainer = styled.section`
   gap: 15px;
 
   button {
-    width: 50%;
+    width: 33.33%;
     height: 115px;
     font-size: 22px;
     text-align: left;
