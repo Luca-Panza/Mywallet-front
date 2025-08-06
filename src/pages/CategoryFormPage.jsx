@@ -48,7 +48,8 @@ export default function CategoryFormPage() {
                 setForm({
                     name: category.name,
                     type: category.type,
-                    icon: category.icon
+                    icon: category.icon,
+                    description: category.description || ""
                 });
             } else {
                 navigate("/categories");
