@@ -110,7 +110,7 @@ export default function TransactionsContainer({ transactions, balance, onTransac
                   })}
                 </span>
                 <TransactionInfo>
-                  <TransactionDescription 
+                  <TransactionDescription
                     data-test="registry-name"
                     onClick={() => handleEditTransaction(transaction._id)}
                     title="Click to edit transaction"
@@ -119,8 +119,8 @@ export default function TransactionsContainer({ transactions, balance, onTransac
                   </TransactionDescription>
                   {category && (
                     <CategoryInfo>
-                      <CategoryIcon>{category.icon}</CategoryIcon>
                       <CategoryName>{category.name}</CategoryName>
+                      <CategoryIcon>{category.icon}</CategoryIcon>
                     </CategoryInfo>
                   )}
                 </TransactionInfo>
@@ -159,7 +159,7 @@ export default function TransactionsContainer({ transactions, balance, onTransac
 
 const TransactionsContainerSC = styled.article`
   flex-grow: 1;
-  background-color: #1D1C19;
+  background-color: #FFF;
   color: #fff;
   border-radius: 5px;
   padding: 16px;
@@ -171,6 +171,8 @@ const TransactionsContainerSC = styled.article`
     justify-content: space-between;
     user-select: none;
     strong {
+      font-size: 13px;
+      color: #000;
       font-weight: 700;
       text-transform: uppercase;
     }
@@ -233,6 +235,7 @@ const CategoryName = styled.span`
 const TransactionDescription = styled.strong`
   cursor: pointer;
   transition: color 0.2s ease;
+  color: #000;
   
   &:hover {
     color: #4CAF50;
