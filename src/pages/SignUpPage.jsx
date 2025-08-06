@@ -15,44 +15,45 @@ export default function SignUpPage() {
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
 
 
-  function confirmRegister (e) {
-		e.preventDefault();
-    if(password !== passwordConfirmation) 
+  function confirmRegister(e) {
+    e.preventDefault();
+    if (password !== passwordConfirmation)
       return Swal.fire({
-      title: 'Error!',
-      text: 'Different passwords, try again!',
-      icon: 'error',
-      confirmButtonText: 'Ok',
-      background: '#fff',
-      color: '#2d2d2d',
-      confirmButtonColor: '#77407B',
-      timer: 1500
-    });
-      
-      axios.post(`${import.meta.env.VITE_API_URL}/signUp`, {name, email, password:password})
+        title: 'Error!',
+        text: 'Different passwords, try again!',
+        icon: 'error',
+        confirmButtonText: 'Ok',
+        background: '#fff',
+        color: '#000',
+        confirmButtonColor: '#282828',
+        timer: 1500
+      });
 
-        .then((res) => {
-          Swal.fire({
-            title: 'Account Created!',
-            icon: "success",
-            confirmButtonText: 'Ok',
-            background: '#fff',
-            color: '#2d2d2d',
-            confirmButtonColor: '#77407B',
-            timer: 1500
-          });
-          navigate("/")}) 
-        .catch(e => 
-          Swal.fire({
-            title: 'Error!',
-            icon: 'error',
-            confirmButtonText: 'Ok',
-            background: '#fff',
-            color: '#2d2d2d',
-            confirmButtonColor: '#77407B',
-            timer: 1500
+    axios.post(`${import.meta.env.VITE_API_URL}/signUp`, { name, email, password: password })
+
+      .then((res) => {
+        Swal.fire({
+          title: 'Account Created!',
+          icon: "success",
+          confirmButtonText: 'Ok',
+          background: '#fff',
+          color: '#000',
+          confirmButtonColor: '#282828',
+          timer: 1500
+        });
+        navigate("/")
+      })
+      .catch(e =>
+        Swal.fire({
+          title: 'Error!',
+          icon: 'error',
+          confirmButtonText: 'Ok',
+          background: '#fff',
+          color: '#000',
+          confirmButtonColor: '#282828',
+          timer: 1500
         }));
-    }
+  }
 
   return (
     <SingUpContainer>
@@ -81,5 +82,10 @@ const SingUpContainer = styled.section`
   align-items: center;
   button:hover {
     opacity: 0.8;
+  }
+
+  input {
+    background-color: #FFF;
+    color: #000;
   }
 `

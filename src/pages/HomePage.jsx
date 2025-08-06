@@ -4,8 +4,11 @@ import Swal from "sweetalert2";
 import { BiExit } from "react-icons/bi";
 import { AiOutlineMinusCircle, AiOutlinePlusCircle } from "react-icons/ai";
 import { FiUpload } from "react-icons/fi";
+import { MdCategory } from "react-icons/md";
+import { BiBarChart } from "react-icons/bi";
+import { HiMenu } from "react-icons/hi";
 import { useNavigate } from "react-router-dom";
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext, useEffect, useRef } from "react";
 
 import { AppContext } from "/src/context/AppContext";
 import TransactionsContainer from "/src/components/TransactionsContainer";
@@ -16,6 +19,8 @@ export default function HomePage() {
   const [balance, setBalance] = useState(0.0);
   const [transactions, setTransactions] = useState([]);
   const [showImport, setShowImport] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+  const menuRef = useRef(null);
   const navigate = useNavigate();
 
   const loadTransactions = () => {
@@ -42,31 +47,70 @@ export default function HomePage() {
     loadTransactions();
   }, []);
 
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setShowMenu(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   const handleImportSuccess = () => {
     loadTransactions(); // Reload transactions after successful import
     setShowImport(false); // Hide import component
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    navigate("/");
+    Swal.fire({
+      title: 'Logged Out',
+      text: 'You have been successfully logged out.',
+      icon: 'info',
+      confirmButtonText: 'Ok',
+      background: '#fff',
+      color: '#000',
+      confirmButtonColor: '#282828'
+    });
   };
 
   return (
     <HomeContainer>
       <Header>
         <h1 data-test="user-name">Hello, {user.name}!</h1>
-        <ExitIcon 
-          data-test="logout"
-          onClick={() => {
-            localStorage.removeItem("user");
-            navigate("/");
-            Swal.fire({
-              title: 'Logged Out',
-              text: 'You have been successfully logged out.',
-              icon: 'info',
-              confirmButtonText: 'Ok',
-              background: '#fff',
-              color: '#2d2d2d',
-              confirmButtonColor: '#77407B'
-          });
-          }}
-        />
+        <MenuContainer ref={menuRef}>
+          <MenuIcon
+            data-test="menu"
+            onClick={() => setShowMenu(!showMenu)}
+          />
+          {showMenu && (
+            <MenuDropdown>
+              <MenuItem onClick={() => {
+                setShowMenu(false);
+                navigate("/categories");
+              }}>
+                <MdCategory /> Manage Categories
+              </MenuItem>
+              <MenuItem onClick={() => {
+                setShowMenu(false);
+                navigate("/category/summary");
+              }}>
+                <BiBarChart /> Category Summary
+              </MenuItem>
+              <MenuItem onClick={() => {
+                setShowMenu(false);
+                handleLogout();
+              }}>
+                <BiExit /> Logout
+              </MenuItem>
+            </MenuDropdown>
+          )}
+        </MenuContainer>
       </Header>
 
       <TransactionsContainer transactions={transactions} balance={balance} />
@@ -122,6 +166,56 @@ const Header = styled.header`
   user-select: none;
 `;
 
+const MenuContainer = styled.div`
+  position: relative;
+`;
+
+const MenuIcon = styled(HiMenu)`
+  cursor: pointer;
+  font-size: 28px;
+  color: white;
+  
+  &:hover {
+    opacity: 0.8;
+  }
+`;
+
+const MenuDropdown = styled.div`
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  min-width: 200px;
+  overflow: hidden;
+  margin-top: 8px;
+`;
+
+const MenuItem = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px 20px;
+  color: #333;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background: #f5f5f5;
+  }
+
+  &:not(:last-child) {
+    border-bottom: 1px solid #eee;
+  }
+
+  svg {
+    font-size: 18px;
+  }
+`;
+
 const ExitIcon = styled(BiExit)`
   cursor: pointer;
 `;
@@ -133,7 +227,7 @@ const ButtonsContainer = styled.section`
   gap: 15px;
 
   button {
-    width: 33.33%;
+    flex: 1;
     height: 115px;
     font-size: 22px;
     text-align: left;

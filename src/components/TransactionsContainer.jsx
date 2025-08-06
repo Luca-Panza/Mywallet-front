@@ -1,30 +1,72 @@
 import styled from "styled-components";
+import { useContext, useEffect, useState } from "react";
+import { AppContext } from "../context/AppContext";
 
 export default function TransactionsContainer({ transactions, balance }) {
+  const { user } = useContext(AppContext);
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    if (user?.token) {
+      fetchCategories();
+    }
+  }, [user]);
+
+  async function fetchCategories() {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/categories`, {
+        headers: {
+          Authorization: user.token
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setCategories(data);
+      }
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  }
+
+  function getCategoryById(categoryId) {
+    return categories.find(cat => cat._id === categoryId);
+  }
   return (
     <TransactionsContainerSC>
       <ul>
-        {transactions.map((transaction) => (
-          <ListItemContainer key={transaction._id}>
-            <div>
-              <span>
-                {new Date(transaction.date).toLocaleDateString("en-US", {
-                  month: "numeric",
-                  day: "numeric",
-                })}
-              </span>
-              <strong data-test="registry-name">{transaction.description}</strong>
-            </div>
-            <div style={{ display: "flex", gap: "10px" }}>
-              <Value
-                data-test="registry-amount"
-                color={transaction.type === "income" ? "true" : "false"}
-              >
-                {transaction.amount.toFixed(2).replace(".", ",")}
-              </Value>
-            </div>
-          </ListItemContainer>
-        ))}
+        {transactions.map((transaction) => {
+          const category = getCategoryById(transaction.categoryId);
+          return (
+            <ListItemContainer key={transaction._id}>
+              <div>
+                <span>
+                  {new Date(transaction.date).toLocaleDateString("en-US", {
+                    month: "numeric",
+                    day: "numeric",
+                  })}
+                </span>
+                <TransactionInfo>
+                  <strong data-test="registry-name">{transaction.description}</strong>
+                  {category && (
+                    <CategoryInfo>
+                      <CategoryIcon>{category.icon}</CategoryIcon>
+                      <CategoryName>{category.name}</CategoryName>
+                    </CategoryInfo>
+                  )}
+                </TransactionInfo>
+              </div>
+              <div style={{ display: "flex", gap: "10px" }}>
+                <Value
+                  data-test="registry-amount"
+                  color={transaction.type === "income" ? "true" : "false"}
+                >
+                  {transaction.amount.toFixed(2).replace(".", ",")}
+                </Value>
+              </div>
+            </ListItemContainer>
+          );
+        })}
       </ul>
 
       <article>
@@ -79,4 +121,31 @@ const ListItemContainer = styled.li`
     color: #c6c6c6;
     margin-right: 10px;
   }
+
+  div {
+    display: flex;
+  }
+`;
+
+const TransactionInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+`;
+
+const CategoryInfo = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+`;
+
+const CategoryIcon = styled.span`
+  font-size: 12px;
+`;
+
+const CategoryName = styled.span`
+  font-size: 12px;
+  color: #a0a0a0 !important;
+  margin: 0 !important;
 `;

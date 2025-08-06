@@ -20,8 +20,8 @@ export default function CSVImportComponent({ onImportSuccess }) {
         icon: 'error',
         confirmButtonText: 'Ok',
         background: '#fff',
-        color: '#2d2d2d',
-        confirmButtonColor: '#77407B'
+        color: '#000',
+        confirmButtonColor: '#282828'
       });
       setFile(null);
     }
@@ -87,8 +87,8 @@ export default function CSVImportComponent({ onImportSuccess }) {
         icon: 'error',
         confirmButtonText: 'Ok',
         background: '#fff',
-        color: '#2d2d2d',
-        confirmButtonColor: '#77407B'
+        color: '#000',
+        confirmButtonColor: '#282828'
       });
       return;
     }
@@ -109,12 +109,12 @@ export default function CSVImportComponent({ onImportSuccess }) {
           <p><strong>${transactions.length}</strong> transactions found.</p>
           <p>Do you want to import all of them?</p>
           <div style="max-height: 200px; overflow-y: auto; text-align: left; margin-top: 10px;">
-            ${transactions.slice(0, 5).map(t => 
-              `<div style="margin: 5px 0; padding: 5px; background: #f5f5f5; border-radius: 3px;">
+            ${transactions.slice(0, 5).map(t =>
+          `<div style="margin: 5px 0; padding: 5px; background: #f5f5f5; border-radius: 3px;">
                 <strong>${t.description}</strong><br>
                 ${t.date} - $${t.amount.toFixed(2)} (${t.type === 'income' ? 'Income' : 'Expense'})
               </div>`
-            ).join('')}
+        ).join('')}
             ${transactions.length > 5 ? `<p>... and ${transactions.length - 5} more transactions</p>` : ''}
           </div>
         `,
@@ -123,8 +123,8 @@ export default function CSVImportComponent({ onImportSuccess }) {
         confirmButtonText: 'Import',
         cancelButtonText: 'Cancel',
         background: '#fff',
-        color: '#2d2d2d',
-        confirmButtonColor: '#77407B'
+        color: '#000',
+        confirmButtonColor: '#282828'
       });
 
       if (!result.isConfirmed) {
@@ -165,8 +165,8 @@ export default function CSVImportComponent({ onImportSuccess }) {
           icon: 'success',
           confirmButtonText: 'Ok',
           background: '#fff',
-          color: '#2d2d2d',
-          confirmButtonColor: '#77407B'
+          color: '#000',
+          confirmButtonColor: '#282828'
         });
 
         if (onImportSuccess) {
@@ -184,8 +184,8 @@ export default function CSVImportComponent({ onImportSuccess }) {
         icon: 'error',
         confirmButtonText: 'Ok',
         background: '#fff',
-        color: '#2d2d2d',
-        confirmButtonColor: '#77407B'
+        color: '#000',
+        confirmButtonColor: '#282828'
       });
     } finally {
       setIsLoading(false);
@@ -262,7 +262,7 @@ const FileInput = styled.input`
 const FileLabel = styled.label`
   display: inline-block;
   padding: 10px 15px;
-  background: #77407B;
+  background: #282828;
   color: white;
   border-radius: 5px;
   cursor: pointer;
@@ -277,7 +277,7 @@ const FileLabel = styled.label`
 const ImportButton = styled.button`
   width: 100%;
   height: 46px;
-  background: #77407B;
+  background: #282828;
   color: white;
   border: none;
   border-radius: 5px;
