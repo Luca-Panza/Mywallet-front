@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import axios from "axios";
+import Swal from 'sweetalert2';
 import { AppContext } from "../context/AppContext";
 import MyWalletLogo from "../components/MyWalletLogo";
 
@@ -63,7 +64,15 @@ export default function CategoryFormPage() {
         e.preventDefault();
 
         if (!form.name.trim()) {
-            alert("Category name is required");
+            Swal.fire({
+                title: 'Validation Error',
+                text: 'Category name is required',
+                icon: 'warning',
+                confirmButtonText: 'Ok',
+                background: '#fff',
+                color: '#000',
+                confirmButtonColor: '#282828'
+            });
             return;
         }
 
@@ -78,16 +87,42 @@ export default function CategoryFormPage() {
 
             if (isEditing) {
                 await axios.put(`${import.meta.env.VITE_API_URL}/categories/${id}`, form, config);
-                alert("Category updated successfully!");
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Category updated successfully!',
+                    icon: 'success',
+                    confirmButtonText: 'Ok',
+                    background: '#fff',
+                    color: '#000',
+                    confirmButtonColor: '#282828',
+                    timer: 1500
+                });
             } else {
                 await axios.post(`${import.meta.env.VITE_API_URL}/categories`, form, config);
-                alert("Category created successfully!");
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Category created successfully!',
+                    icon: 'success',
+                    confirmButtonText: 'Ok',
+                    background: '#fff',
+                    color: '#000',
+                    confirmButtonColor: '#282828',
+                    timer: 1500
+                });
             }
 
             navigate("/categories");
         } catch (error) {
             console.error("Error saving category:", error);
-            alert(error.response?.data || "Error saving category");
+            Swal.fire({
+                title: 'Error!',
+                text: error.response?.data || 'Error saving category',
+                icon: 'error',
+                confirmButtonText: 'Ok',
+                background: '#fff',
+                color: '#000',
+                confirmButtonColor: '#282828'
+            });
         } finally {
             setLoading(false);
         }

@@ -1,10 +1,14 @@
 import styled from "styled-components";
 import { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Swal from 'sweetalert2';
+import { IoClose } from "react-icons/io5";
 import { AppContext } from "../context/AppContext";
 
-export default function TransactionsContainer({ transactions, balance }) {
+export default function TransactionsContainer({ transactions, balance, onTransactionDeleted }) {
   const { user } = useContext(AppContext);
   const [categories, setCategories] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (user?.token) {
@@ -32,6 +36,65 @@ export default function TransactionsContainer({ transactions, balance }) {
   function getCategoryById(categoryId) {
     return categories.find(cat => cat._id === categoryId);
   }
+
+  const handleDeleteTransaction = async (transactionId) => {
+    const result = await Swal.fire({
+      title: 'Delete Transaction?',
+      text: 'Are you sure you want to delete this transaction? This action cannot be undone.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel',
+      background: '#fff',
+      color: '#000'
+    });
+
+    if (result.isConfirmed) {
+      try {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/transaction/${transactionId}`, {
+          method: 'DELETE',
+          headers: {
+            Authorization: user.token
+          },
+        });
+
+        if (response.ok) {
+          Swal.fire({
+            title: 'Deleted!',
+            text: 'Transaction has been deleted successfully.',
+            icon: 'success',
+            confirmButtonText: 'Ok',
+            background: '#fff',
+            color: '#000',
+            confirmButtonColor: '#282828',
+            timer: 1500
+          });
+          if (onTransactionDeleted) {
+            onTransactionDeleted();
+          }
+        } else {
+          throw new Error('Failed to delete transaction');
+        }
+      } catch (error) {
+        Swal.fire({
+          title: 'Error!',
+          text: 'Failed to delete transaction. Please try again.',
+          icon: 'error',
+          confirmButtonText: 'Ok',
+          background: '#fff',
+          color: '#000',
+          confirmButtonColor: '#282828'
+        });
+      }
+    }
+  };
+
+  const handleEditTransaction = (transactionId) => {
+    navigate(`/edit-transaction/${transactionId}`);
+  };
+
   return (
     <TransactionsContainerSC>
       <ul>
@@ -47,7 +110,13 @@ export default function TransactionsContainer({ transactions, balance }) {
                   })}
                 </span>
                 <TransactionInfo>
-                  <strong data-test="registry-name">{transaction.description}</strong>
+                  <TransactionDescription 
+                    data-test="registry-name"
+                    onClick={() => handleEditTransaction(transaction._id)}
+                    title="Click to edit transaction"
+                  >
+                    {transaction.description}
+                  </TransactionDescription>
                   {category && (
                     <CategoryInfo>
                       <CategoryIcon>{category.icon}</CategoryIcon>
@@ -56,13 +125,19 @@ export default function TransactionsContainer({ transactions, balance }) {
                   )}
                 </TransactionInfo>
               </div>
-              <div style={{ display: "flex", gap: "10px" }}>
+              <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
                 <Value
                   data-test="registry-amount"
                   color={transaction.type === "income" ? "true" : "false"}
                 >
                   {transaction.amount.toFixed(2).replace(".", ",")}
                 </Value>
+                <DeleteButton
+                  onClick={() => handleDeleteTransaction(transaction._id)}
+                  title="Delete transaction"
+                >
+                  <IoClose />
+                </DeleteButton>
               </div>
             </ListItemContainer>
           );
@@ -99,6 +174,11 @@ const TransactionsContainerSC = styled.article`
       font-weight: 700;
       text-transform: uppercase;
     }
+  }
+
+  ul {
+    overflow-y: auto;
+    max-height: 350px;
   }
 `;
 
@@ -148,4 +228,33 @@ const CategoryName = styled.span`
   font-size: 12px;
   color: #a0a0a0 !important;
   margin: 0 !important;
+`;
+
+const TransactionDescription = styled.strong`
+  cursor: pointer;
+  transition: color 0.2s ease;
+  
+  &:hover {
+    color: #4CAF50;
+  }
+`;
+
+const DeleteButton = styled.button`
+  background: none;
+  border: none;
+  color: #ff6b6b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  font-size: 18px;
+  
+  &:hover {
+    background-color: #ff6b6b;
+    color: white;
+    transform: scale(1.1);
+  }
 `;

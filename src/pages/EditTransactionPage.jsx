@@ -5,36 +5,68 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useState, useContext, useEffect } from "react";
 
 import { AppContext } from '/src/context/AppContext';
-import CSVImportComponent from '/src/components/CSVImportComponent';
 
-export default function TransactionsPage() {
-  const { type } = useParams();
+export default function EditTransactionPage() {
+  const { id } = useParams();
   const { user } = useContext(AppContext);
-  const [amount, setAmount] = useState(undefined);
+  const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [categories, setCategories] = useState([]);
-  const [showImport, setShowImport] = useState(false);
+  const [transactionType, setTransactionType] = useState("");
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (type !== "income" && type !== "expense") return navigate('/transactions');
     if (!user || !user.token) return navigate('/');
-    fetchCategories();
+    fetchTransaction();
   }, []);
+
+  useEffect(() => {
+    if (transactionType) {
+      fetchCategories();
+    }
+  }, [transactionType]);
+
+  async function fetchTransaction() {
+    try {
+      const config = { headers: { Authorization: user.token } };
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/transaction/${id}`, config);
+      const transaction = response.data;
+      
+      setAmount(transaction.amount.toString());
+      setDescription(transaction.description);
+      setCategoryId(transaction.categoryId || "");
+      setTransactionType(transaction.type);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching transaction:", error);
+      Swal.fire({
+        title: 'Error!',
+        text: 'Failed to load transaction details.',
+        icon: 'error',
+        confirmButtonText: 'Ok',
+        background: '#fff',
+        color: '#000',
+        confirmButtonColor: '#282828'
+      }).then(() => {
+        navigate('/transactions');
+      });
+    }
+  }
 
   async function fetchCategories() {
     try {
       const config = { headers: { Authorization: user.token } };
       const response = await axios.get(`${import.meta.env.VITE_API_URL}/categories`, config);
-      const filteredCategories = response.data.filter(cat => cat.type === type);
+      const filteredCategories = response.data.filter(cat => cat.type === transactionType);
       setCategories(filteredCategories);
     } catch (error) {
       console.error("Error fetching categories:", error);
     }
   }
 
-  function createTransaction(ev) {
+  function updateTransaction(ev) {
     ev.preventDefault();
 
     const config = { headers: { Authorization: user.token } };
@@ -45,10 +77,10 @@ export default function TransactionsPage() {
     };
 
     axios
-      .post(`${import.meta.env.VITE_API_URL}/new-transaction/${type}`, reqBody, config)
+      .put(`${import.meta.env.VITE_API_URL}/transaction/${id}`, reqBody, config)
       .then(res => {
         Swal.fire({
-          title: 'Transaction Created!',
+          title: 'Transaction Updated!',
           icon: "success",
           confirmButtonText: 'Ok',
           background: '#fff',
@@ -90,15 +122,19 @@ export default function TransactionsPage() {
     }
   }
 
-  const handleImportSuccess = () => {
-    navigate('/transactions'); // Redirect to home after successful import
-  };
+  if (loading) {
+    return (
+      <TransactionsContainer>
+        <h1>Loading...</h1>
+      </TransactionsContainer>
+    );
+  }
 
   return (
     <TransactionsContainer>
-      <h1>{`New ${type}`}</h1>
+      <h1>Edit {transactionType}</h1>
 
-      <form onSubmit={createTransaction}>
+      <form onSubmit={updateTransaction}>
         <input
           placeholder="Amount"
           type="number"
@@ -130,22 +166,8 @@ export default function TransactionsPage() {
           ))}
         </CategorySelect>
 
-        <button data-test="registry-save">Save Transaction</button>
+        <button data-test="registry-save">Update Transaction</button>
       </form>
-
-      <ImportToggle>
-        <button
-          type="button"
-          onClick={() => setShowImport(!showImport)}
-          className="import-toggle-btn"
-        >
-          {showImport ? 'Hide CSV Import' : 'Import Multiple Transactions from CSV'}
-        </button>
-      </ImportToggle>
-
-      {showImport && (
-        <CSVImportComponent onImportSuccess={handleImportSuccess} />
-      )}
     </TransactionsContainer>
   );
 }
@@ -168,28 +190,6 @@ const TransactionsContainer = styled.main`
 
     &:placeholder {
       color: #000;
-    }
-  }
-`;
-
-const ImportToggle = styled.div`
-  margin-top: 20px;
-  width: 100%;
-  
-  .import-toggle-btn {
-    width: 100%;
-    height: 46px;
-    background: transparent;
-    color: white;
-    border: 2px solid #282828;
-    border-radius: 5px;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.3s;
-
-    &:hover {
-      background: #282828;
-      color: white;
     }
   }
 `;

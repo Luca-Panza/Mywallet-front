@@ -40,7 +40,17 @@ export default function HomePage() {
         );
         setBalance(totalBalance);
       })
-      .catch((e) => alert(e.response.data));
+      .catch((e) => {
+        Swal.fire({
+          title: 'Error!',
+          text: e.response?.data || 'Failed to load transactions',
+          icon: 'error',
+          confirmButtonText: 'Ok',
+          background: '#fff',
+          color: '#000',
+          confirmButtonColor: '#282828'
+        });
+      });
   };
 
   useEffect(() => {
@@ -113,7 +123,11 @@ export default function HomePage() {
         </MenuContainer>
       </Header>
 
-      <TransactionsContainer transactions={transactions} balance={balance} />
+      <TransactionsContainer 
+        transactions={transactions} 
+        balance={balance} 
+        onTransactionDeleted={loadTransactions}
+      />
 
       {showImport && (
         <CSVImportComponent onImportSuccess={handleImportSuccess} />

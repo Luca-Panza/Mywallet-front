@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import axios from "axios";
+import Swal from 'sweetalert2';
 import { AppContext } from "../context/AppContext";
 import MyWalletLogo from "../components/MyWalletLogo";
 
@@ -31,7 +32,15 @@ export default function CategoriesPage() {
                 return;
             }
             console.error("Error fetching categories:", error);
-            alert("Error fetching categories");
+            Swal.fire({
+                title: 'Error!',
+                text: 'Error fetching categories',
+                icon: 'error',
+                confirmButtonText: 'Ok',
+                background: '#fff',
+                color: '#000',
+                confirmButtonColor: '#282828'
+            });
         } finally {
             setLoading(false);
         }
@@ -42,16 +51,46 @@ export default function CategoriesPage() {
     }
 
     async function deleteCategory(id) {
-        if (!confirm("Are you sure you want to delete this category?")) return;
+        const result = await Swal.fire({
+            title: 'Delete Category?',
+            text: 'Are you sure you want to delete this category? This action cannot be undone.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel',
+            background: '#fff',
+            color: '#000'
+        });
+
+        if (!result.isConfirmed) return;
 
         try {
             const config = { headers: { Authorization: user.token } };
             await axios.delete(`${import.meta.env.VITE_API_URL}/categories/${id}`, config);
-            alert("Category deleted successfully!");
+            Swal.fire({
+                title: 'Deleted!',
+                text: 'Category deleted successfully!',
+                icon: 'success',
+                confirmButtonText: 'Ok',
+                background: '#fff',
+                color: '#000',
+                confirmButtonColor: '#282828',
+                timer: 1500
+            });
             fetchCategories();
         } catch (error) {
             console.error("Error deleting category:", error);
-            alert(error.response?.data || "Error deleting category");
+            Swal.fire({
+                title: 'Error!',
+                text: error.response?.data || 'Error deleting category',
+                icon: 'error',
+                confirmButtonText: 'Ok',
+                background: '#fff',
+                color: '#000',
+                confirmButtonColor: '#282828'
+            });
         }
     }
 
