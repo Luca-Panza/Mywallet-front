@@ -4,8 +4,9 @@ import { useNavigate } from "react-router-dom";
 import Swal from 'sweetalert2';
 import { IoClose } from "react-icons/io5";
 import { AppContext } from "../context/AppContext";
+import dayjs from "dayjs";
 
-export default function TransactionsContainer({ transactions, balance, onTransactionDeleted }) {
+export default function TransactionsContainer({ transactions, balance, onTransactionDeleted, showImport }) {
   const { user } = useContext(AppContext);
   const [categories, setCategories] = useState([]);
   const navigate = useNavigate();
@@ -96,7 +97,7 @@ export default function TransactionsContainer({ transactions, balance, onTransac
   };
 
   return (
-    <TransactionsContainerSC>
+    <TransactionsContainerSC showImport={showImport} >
       <ul>
         {transactions.map((transaction) => {
           const category = getCategoryById(transaction.categoryId);
@@ -104,10 +105,7 @@ export default function TransactionsContainer({ transactions, balance, onTransac
             <ListItemContainer key={transaction._id}>
               <div>
                 <span>
-                  {new Date(transaction.date).toLocaleDateString("en-US", {
-                    month: "numeric",
-                    day: "numeric",
-                  })}
+                  {dayjs(transaction.date).format("DD/MM/YYYY")}
                 </span>
                 <TransactionInfo>
                   <TransactionDescription
@@ -180,7 +178,8 @@ const TransactionsContainerSC = styled.article`
 
   ul {
     overflow-y: auto;
-    max-height: 350px;
+    max-height: ${(props) => (props.showImport ? "calc(100vh - 600px)" : "calc(100vh - 300px)")};
+    overflow-x: hidden;
   }
 `;
 

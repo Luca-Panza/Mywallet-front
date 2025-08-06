@@ -65,10 +65,10 @@ export default function CSVImportComponent({ onImportSuccess }) {
           throw new Error(`Invalid amount on line ${i + 1}: ${amount}`);
         }
 
-        const type = numericAmount < 0 ? 'income' : 'expense';
+        const type = numericAmount > 0 ? 'income' : 'expense';
 
         transactions.push({
-          date: date.replace(/"/g, ''),
+          date,
           description: title.replace(/"/g, ''),
           amount: Math.abs(numericAmount),
           type: type
@@ -112,13 +112,12 @@ export default function CSVImportComponent({ onImportSuccess }) {
             ${transactions.slice(0, 5).map(t =>
           `<div style="margin: 5px 0; padding: 5px; background: #f5f5f5; border-radius: 3px;">
                 <strong>${t.description}</strong><br>
-                ${t.date} - $${t.amount.toFixed(2)} (${t.type === 'income' ? 'Income' : 'Expense'})
+                ${t.date} - R$${t.amount.toFixed(2)} (${t.type === 'income' ? 'Income' : 'Expense'})
               </div>`
         ).join('')}
             ${transactions.length > 5 ? `<p>... and ${transactions.length - 5} more transactions</p>` : ''}
           </div>
         `,
-        icon: 'question',
         showCancelButton: true,
         confirmButtonText: 'Import',
         cancelButtonText: 'Cancel',
@@ -140,7 +139,8 @@ export default function CSVImportComponent({ onImportSuccess }) {
         try {
           const reqBody = {
             description: transaction.description,
-            amount: transaction.amount
+            amount: transaction.amount,
+            date: transaction.date,
           };
 
           await axios.post(

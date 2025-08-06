@@ -96,7 +96,10 @@ export default function TransactionsPage() {
 
   return (
     <TransactionsContainer>
-      <h1>{`New ${type}`}</h1>
+      <HeaderDiv>
+        <h1>{`New ${type}`}</h1>
+        <p onClick={() => navigate("/transactions")}>Back</p>
+      </HeaderDiv>
 
       <form onSubmit={createTransaction}>
         <input
@@ -149,6 +152,26 @@ export default function TransactionsPage() {
     </TransactionsContainer>
   );
 }
+
+const HeaderDiv = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  p {
+    width: auto;
+    padding: 0;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-decoration: underline;
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+`;
 
 const TransactionsContainer = styled.main`
   height: calc(100vh - 50px);

@@ -7,155 +7,155 @@ import { AppContext } from "../context/AppContext";
 import MyWalletLogo from "../components/MyWalletLogo";
 
 export default function CategoriesPage() {
-    const { user } = useContext(AppContext);
-    const navigate = useNavigate();
-    const [categories, setCategories] = useState([]);
-    const [loading, setLoading] = useState(true);
+  const { user } = useContext(AppContext);
+  const navigate = useNavigate();
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        if (!user?.token) {
-            navigate("/");
-            return;
-        }
-        fetchCategories();
-    }, []);
-
-    async function fetchCategories() {
-        try {
-            const config = { headers: { Authorization: user.token } };
-            const response = await axios.get(`${import.meta.env.VITE_API_URL}/categories`, config);
-            setCategories(response.data);
-        } catch (error) {
-            if (error.response?.status === 401) {
-                localStorage.removeItem("user");
-                navigate("/");
-                return;
-            }
-            console.error("Error fetching categories:", error);
-            Swal.fire({
-                title: 'Error!',
-                text: 'Error fetching categories',
-                icon: 'error',
-                confirmButtonText: 'Ok',
-                background: '#fff',
-                color: '#000',
-                confirmButtonColor: '#282828'
-            });
-        } finally {
-            setLoading(false);
-        }
+  useEffect(() => {
+    if (!user?.token) {
+      navigate("/");
+      return;
     }
+    fetchCategories();
+  }, []);
 
-    function capitalizeFirstLetter(string) {
-        return string.charAt(0).toUpperCase() + string.slice(1);
+  async function fetchCategories() {
+    try {
+      const config = { headers: { Authorization: user.token } };
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/categories`, config);
+      setCategories(response.data);
+    } catch (error) {
+      if (error.response?.status === 401) {
+        localStorage.removeItem("user");
+        navigate("/");
+        return;
+      }
+      console.error("Error fetching categories:", error);
+      Swal.fire({
+        title: 'Error!',
+        text: 'Error fetching categories',
+        icon: 'error',
+        confirmButtonText: 'Ok',
+        background: '#fff',
+        color: '#000',
+        confirmButtonColor: '#282828'
+      });
+    } finally {
+      setLoading(false);
     }
+  }
 
-    async function deleteCategory(id) {
-        const result = await Swal.fire({
-            title: 'Delete Category?',
-            text: 'Are you sure you want to delete this category? This action cannot be undone.',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Yes, delete it!',
-            cancelButtonText: 'Cancel',
-            background: '#fff',
-            color: '#000'
-        });
+  function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
 
-        if (!result.isConfirmed) return;
+  async function deleteCategory(id) {
+    const result = await Swal.fire({
+      title: 'Delete Category?',
+      text: 'Are you sure you want to delete this category? This action cannot be undone.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel',
+      background: '#fff',
+      color: '#000'
+    });
 
-        try {
-            const config = { headers: { Authorization: user.token } };
-            await axios.delete(`${import.meta.env.VITE_API_URL}/categories/${id}`, config);
-            Swal.fire({
-                title: 'Deleted!',
-                text: 'Category deleted successfully!',
-                icon: 'success',
-                confirmButtonText: 'Ok',
-                background: '#fff',
-                color: '#000',
-                confirmButtonColor: '#282828',
-                timer: 1500
-            });
-            fetchCategories();
-        } catch (error) {
-            console.error("Error deleting category:", error);
-            Swal.fire({
-                title: 'Error!',
-                text: error.response?.data || 'Error deleting category',
-                icon: 'error',
-                confirmButtonText: 'Ok',
-                background: '#fff',
-                color: '#000',
-                confirmButtonColor: '#282828'
-            });
-        }
+    if (!result.isConfirmed) return;
+
+    try {
+      const config = { headers: { Authorization: user.token } };
+      await axios.delete(`${import.meta.env.VITE_API_URL}/categories/${id}`, config);
+      Swal.fire({
+        title: 'Deleted!',
+        text: 'Category deleted successfully!',
+        icon: 'success',
+        confirmButtonText: 'Ok',
+        background: '#fff',
+        color: '#000',
+        confirmButtonColor: '#282828',
+        timer: 1500
+      });
+      fetchCategories();
+    } catch (error) {
+      console.error("Error deleting category:", error);
+      Swal.fire({
+        title: 'Error!',
+        text: error.response?.data || 'Error deleting category',
+        icon: 'error',
+        confirmButtonText: 'Ok',
+        background: '#fff',
+        color: '#000',
+        confirmButtonColor: '#282828'
+      });
     }
+  }
 
-    if (loading) {
-        return (
-            <CategoriesContainer>
-                <Header>
-                    <MyWalletLogo />
-                </Header>
-                <p>Loading...</p>
-            </CategoriesContainer>
-        );
-    }
-
+  if (loading) {
     return (
-        <CategoriesContainer>
-            <Header>
-                <MyWalletLogo />
-                <button onClick={() => navigate("/transactions")}>Back</button>
-            </Header>
-
-            <ActionsContainer>
-                <h2>Manage Categories</h2>
-                <ActionsButtons>
-                    <button onClick={() => navigate("/category/summary")}>
-                        📊 View Summary
-                    </button>
-                    <button onClick={() => navigate("/category/new")}>
-                        + New Category
-                    </button>
-                </ActionsButtons>
-            </ActionsContainer>
-
-            <CategoriesGrid>
-                {categories.length === 0 ? (
-                    <EmptyState>
-                        <p>No categories created yet.</p>
-                        <button onClick={() => navigate("/category/new")}>
-                            Create first category
-                        </button>
-                    </EmptyState>
-                ) : (
-                    categories.map((category) => (
-                        <CategoryCard key={category._id}>
-                            <CategoryIcon>{category.icon}</CategoryIcon>
-                            <CategoryInfo>
-                                <CategoryName>{category.name}</CategoryName>
-                                <CategoryType type={category.type}>
-                                    {capitalizeFirstLetter(category.type)}
-                                </CategoryType>
-                            </CategoryInfo>
-                            <CategoryActions>
-                                <EditButton onClick={() => navigate(`/category/edit/${category._id}`)}>
-                                    ✏️
-                                </EditButton>
-                                <DeleteButton onClick={() => deleteCategory(category._id)}>
-                                    🗑️
-                                </DeleteButton>
-                            </CategoryActions>
-                        </CategoryCard>
-                    ))
-                )}
-            </CategoriesGrid>
-        </CategoriesContainer>
+      <CategoriesContainer>
+        <Header>
+          <MyWalletLogo />
+        </Header>
+        <p>Loading...</p>
+      </CategoriesContainer>
     );
+  }
+
+  return (
+    <CategoriesContainer>
+      <Header>
+        <MyWalletLogo />
+        <button onClick={() => navigate("/transactions")}>Back</button>
+      </Header>
+
+      <ActionsContainer>
+        <h2>Manage Categories</h2>
+        <ActionsButtons>
+          <button onClick={() => navigate("/category/summary")}>
+            📊 View Summary
+          </button>
+          <button onClick={() => navigate("/category/new")}>
+            + New Category
+          </button>
+        </ActionsButtons>
+      </ActionsContainer>
+
+      <CategoriesGrid>
+        {categories.length === 0 ? (
+          <EmptyState>
+            <p>No categories created yet.</p>
+            <button onClick={() => navigate("/category/new")}>
+              Create first category
+            </button>
+          </EmptyState>
+        ) : (
+          categories.map((category) => (
+            <CategoryCard key={category._id}>
+              <CategoryIcon>{category.icon}</CategoryIcon>
+              <CategoryInfo>
+                <CategoryName>{category.name}</CategoryName>
+                <CategoryType type={category.type}>
+                  {capitalizeFirstLetter(category.type)}
+                </CategoryType>
+              </CategoryInfo>
+              <CategoryActions>
+                <EditButton onClick={() => navigate(`/category/edit/${category._id}`)}>
+                  ✏️
+                </EditButton>
+                <DeleteButton onClick={() => deleteCategory(category._id)}>
+                  🗑️
+                </DeleteButton>
+              </CategoryActions>
+            </CategoryCard>
+          ))
+        )}
+      </CategoriesGrid>
+    </CategoriesContainer>
+  );
 }
 
 const CategoriesContainer = styled.div`
@@ -265,7 +265,7 @@ const CategoryInfo = styled.div`
 const CategoryName = styled.h3`
   font-size: 16px;
   font-weight: 700;
-  color: #000;
+  color: #FFF;
   margin: 0 0 5px 0;
 `;
 

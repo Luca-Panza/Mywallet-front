@@ -6,175 +6,175 @@ import { AppContext } from "../context/AppContext";
 import MyWalletLogo from "../components/MyWalletLogo";
 
 export default function CategorySummaryPage() {
-    const { user } = useContext(AppContext);
-    const navigate = useNavigate();
-    const [summaryData, setSummaryData] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [totalIncome, setTotalIncome] = useState(0);
-    const [totalExpense, setTotalExpense] = useState(0);
+  const { user } = useContext(AppContext);
+  const navigate = useNavigate();
+  const [summaryData, setSummaryData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [totalIncome, setTotalIncome] = useState(0);
+  const [totalExpense, setTotalExpense] = useState(0);
 
-    useEffect(() => {
-        if (!user?.token) {
-            navigate("/");
-            return;
-        }
-        fetchData();
-    }, []);
-
-    async function fetchData() {
-        try {
-            setLoading(true);
-            const config = { headers: { Authorization: user.token } };
-
-            const [categoriesResponse, transactionsResponse] = await Promise.all([
-                axios.get(`${import.meta.env.VITE_API_URL}/categories`, config),
-                axios.get(`${import.meta.env.VITE_API_URL}/transactions`, config),
-            ]);
-
-            calculateSummary(categoriesResponse.data, transactionsResponse.data);
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        } finally {
-            setLoading(false);
-        }
+  useEffect(() => {
+    if (!user?.token) {
+      navigate("/");
+      return;
     }
+    fetchData();
+  }, []);
 
-    function calculateSummary(categories, transactions) {
-        const categorySummary = {};
-        let income = 0;
-        let expense = 0;
+  async function fetchData() {
+    try {
+      setLoading(true);
+      const config = { headers: { Authorization: user.token } };
 
-        categories.forEach(category => {
-            categorySummary[category._id] = {
-                category,
-                total: 0,
-                count: 0,
-                transactions: []
-            };
-        });
+      const [categoriesResponse, transactionsResponse] = await Promise.all([
+        axios.get(`${import.meta.env.VITE_API_URL}/categories`, config),
+        axios.get(`${import.meta.env.VITE_API_URL}/transactions`, config),
+      ]);
 
-        categorySummary["uncategorized"] = {
-            category: { name: "Uncategorized", icon: "📂", type: "Both" },
-            total: 0,
-            count: 0,
-            transactions: []
-        };
-
-        transactions.forEach(transaction => {
-            const amount = transaction.type === "income" ? transaction.amount : -transaction.amount;
-            const categoryKey = transaction.categoryId || "uncategorized";
-
-            if (categorySummary[categoryKey]) {
-                categorySummary[categoryKey].total += amount;
-                categorySummary[categoryKey].count += 1;
-                categorySummary[categoryKey].transactions.push(transaction);
-            }
-
-            if (transaction.type === "income") {
-                income += transaction.amount;
-            } else {
-                expense += transaction.amount;
-            }
-        });
-
-        const summaryArray = Object.values(categorySummary)
-            .filter(item => item.count > 0)
-            .sort((a, b) => Math.abs(b.total) - Math.abs(a.total));
-
-        setSummaryData(summaryArray);
-        setTotalIncome(income);
-        setTotalExpense(expense);
+      calculateSummary(categoriesResponse.data, transactionsResponse.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setLoading(false);
     }
+  }
 
-    if (loading) {
-        return (
-            <SummaryContainer>
-                <Header>
-                    <MyWalletLogo />
-                </Header>
-                <p>Loading...</p>
-            </SummaryContainer>
-        );
-    }
+  function calculateSummary(categories, transactions) {
+    const categorySummary = {};
+    let income = 0;
+    let expense = 0;
 
+    categories.forEach(category => {
+      categorySummary[category._id] = {
+        category,
+        total: 0,
+        count: 0,
+        transactions: []
+      };
+    });
+
+    categorySummary["uncategorized"] = {
+      category: { name: "Uncategorized", icon: "📂", type: "Both" },
+      total: 0,
+      count: 0,
+      transactions: []
+    };
+
+    transactions.forEach(transaction => {
+      const amount = transaction.type === "income" ? transaction.amount : -transaction.amount;
+      const categoryKey = transaction.categoryId || "uncategorized";
+
+      if (categorySummary[categoryKey]) {
+        categorySummary[categoryKey].total += amount;
+        categorySummary[categoryKey].count += 1;
+        categorySummary[categoryKey].transactions.push(transaction);
+      }
+
+      if (transaction.type === "income") {
+        income += transaction.amount;
+      } else {
+        expense += transaction.amount;
+      }
+    });
+
+    const summaryArray = Object.values(categorySummary)
+      .filter(item => item.count > 0)
+      .sort((a, b) => Math.abs(b.total) - Math.abs(a.total));
+
+    setSummaryData(summaryArray);
+    setTotalIncome(income);
+    setTotalExpense(expense);
+  }
+
+  if (loading) {
     return (
-        <SummaryContainer>
-            <Header>
-                <MyWalletLogo />
-                <button onClick={() => navigate("/transactions")}>Back</button>
-            </Header>
-
-            <TitleContainer>
-                <h2>Category Summary</h2>
-                <TotalSummary>
-                    <TotalItem type="income">
-                        <span>Total Income:</span>
-                        <strong>$ {totalIncome.toFixed(2)}</strong>
-                    </TotalItem>
-                    <TotalItem type="expense">
-                        <span>Total Expenses:</span>
-                        <strong>$ {totalExpense.toFixed(2)}</strong>
-                    </TotalItem>
-                    <TotalItem type="balance">
-                        <span>Balance:</span>
-                        <strong>$ {(totalIncome - totalExpense).toFixed(2)}</strong>
-                    </TotalItem>
-                </TotalSummary>
-            </TitleContainer>
-
-            <SummaryGrid>
-                {summaryData.length === 0 ? (
-                    <EmptyState>
-                        <p>No transactions found.</p>
-                    </EmptyState>
-                ) : (
-                    summaryData.map((item, index) => (
-                        <CategorySummaryCard key={index}>
-                            <CategoryHeader>
-                                <CategoryIcon>{item.category.icon}</CategoryIcon>
-                                <CategoryDetails>
-                                    <CategoryName>{item.category.name}</CategoryName>
-                                    <CategoryType type={item.category.type}>
-                                        {item.category.type === "Both" ? "Mixed" :
-                                            item.category.type === "Entrada" ? "Income" :
-                                                item.category.type === "Saída" ? "Expense" : item.category.type}
-                                    </CategoryType>
-                                </CategoryDetails>
-                            </CategoryHeader>
-
-                            <SummaryStats>
-                                <StatItem>
-                                    <StatLabel>Total:</StatLabel>
-                                    <StatValue positive={item.total >= 0}>
-                                        $ {Math.abs(item.total).toFixed(2)}
-                                    </StatValue>
-                                </StatItem>
-                                <StatItem>
-                                    <StatLabel>Transactions:</StatLabel>
-                                    <StatValue>{item.count}</StatValue>
-                                </StatItem>
-                            </SummaryStats>
-
-                            <TransactionsList>
-                                <h4>Recent transactions:</h4>
-                                {item.transactions.slice(0, 3).map(transaction => (
-                                    <TransactionItem key={transaction._id}>
-                                        <span>{transaction.description}</span>
-                                        <TransactionAmount positive={transaction.type === "income"}>
-                                            {transaction.type === "income" ? "+" : "-"}$ {transaction.amount.toFixed(2)}
-                                        </TransactionAmount>
-                                    </TransactionItem>
-                                ))}
-                                {item.transactions.length > 3 && (
-                                    <MoreTransactions>+ {item.transactions.length - 3} more</MoreTransactions>
-                                )}
-                            </TransactionsList>
-                        </CategorySummaryCard>
-                    ))
-                )}
-            </SummaryGrid>
-        </SummaryContainer>
+      <SummaryContainer>
+        <Header>
+          <MyWalletLogo />
+        </Header>
+        <p>Loading...</p>
+      </SummaryContainer>
     );
+  }
+
+  return (
+    <SummaryContainer>
+      <Header>
+        <MyWalletLogo />
+        <button onClick={() => navigate("/transactions")}>Back</button>
+      </Header>
+
+      <TitleContainer>
+        <h2>Category Summary</h2>
+        <TotalSummary>
+          <TotalItem type="income">
+            <span>Total Income:</span>
+            <strong>R$ {totalIncome.toFixed(2)}</strong>
+          </TotalItem>
+          <TotalItem type="expense">
+            <span>Total Expenses:</span>
+            <strong>R$ {totalExpense.toFixed(2)}</strong>
+          </TotalItem>
+          <TotalItem type="balance">
+            <span>Balance:</span>
+            <strong>R$ {(totalIncome - totalExpense).toFixed(2)}</strong>
+          </TotalItem>
+        </TotalSummary>
+      </TitleContainer>
+
+      <SummaryGrid>
+        {summaryData.length === 0 ? (
+          <EmptyState>
+            <p>No transactions found.</p>
+          </EmptyState>
+        ) : (
+          summaryData.map((item, index) => (
+            <CategorySummaryCard key={index}>
+              <CategoryHeader>
+                <CategoryIcon>{item.category.icon}</CategoryIcon>
+                <CategoryDetails>
+                  <CategoryName>{item.category.name}</CategoryName>
+                  <CategoryType type={item.category.type}>
+                    {item.category.type === "Both" ? "Mixed" :
+                      item.category.type === "Entrada" ? "Income" :
+                        item.category.type === "Saída" ? "Expense" : item.category.type}
+                  </CategoryType>
+                </CategoryDetails>
+              </CategoryHeader>
+
+              <SummaryStats>
+                <StatItem>
+                  <StatLabel>Total:</StatLabel>
+                  <StatValue positive={item.total >= 0}>
+                    R$ {Math.abs(item.total).toFixed(2)}
+                  </StatValue>
+                </StatItem>
+                <StatItem>
+                  <StatLabel>Transactions:</StatLabel>
+                  <StatValue>{item.count}</StatValue>
+                </StatItem>
+              </SummaryStats>
+
+              <TransactionsList>
+                <h4>Recent transactions:</h4>
+                {item.transactions.slice(0, 3).map(transaction => (
+                  <TransactionItem key={transaction._id}>
+                    <span>{transaction.description}</span>
+                    <TransactionAmount positive={transaction.type === "income"}>
+                      {transaction.type === "income" ? "+" : "-"}R$ {transaction.amount.toFixed(2)}
+                    </TransactionAmount>
+                  </TransactionItem>
+                ))}
+                {item.transactions.length > 3 && (
+                  <MoreTransactions>+ {item.transactions.length - 3} more</MoreTransactions>
+                )}
+              </TransactionsList>
+            </CategorySummaryCard>
+          ))
+        )}
+      </SummaryGrid>
+    </SummaryContainer>
+  );
 }
 
 const SummaryContainer = styled.div`
@@ -239,15 +239,15 @@ const TotalItem = styled.div`
   strong {
     font-size: 18px;
     color: ${props =>
-        props.type === "income" ? "#4CAF50" :
-            props.type === "expense" ? "#F44336" :
-                "#fff"};
+    props.type === "income" ? "#4CAF50" :
+      props.type === "expense" ? "#F44336" :
+        "#fff"};
   }
 `;
 
 const SummaryGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 20px;
   flex: 1;
   overflow-y: auto;
@@ -293,9 +293,9 @@ const CategoryName = styled.h3`
 const CategoryType = styled.span`
   font-size: 14px;
   color: ${props =>
-        props.type === "Income" || props.type === "Entrada" ? "#4CAF50" :
-            props.type === "Expense" || props.type === "Saída" ? "#F44336" :
-                "#ccc"};
+    props.type === "Income" || props.type === "Entrada" ? "#4CAF50" :
+      props.type === "Expense" || props.type === "Saída" ? "#F44336" :
+        "#ccc"};
   font-weight: 500;
 `;
 
@@ -360,11 +360,9 @@ const MoreTransactions = styled.div`
 `;
 
 const EmptyState = styled.div`
-  grid-column: 1 / -1;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 50px;
   text-align: center;
 
   p {

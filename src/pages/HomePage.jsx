@@ -29,7 +29,7 @@ export default function HomePage() {
     axios
       .get(`${import.meta.env.VITE_API_URL}/transactions`, config)
       .then((res) => {
-        setTransactions(res.data.slice(0, 20));
+        setTransactions(res.data);
         const totalBalance = res.data.reduce(
           (total, transaction) =>
             total +
@@ -123,10 +123,11 @@ export default function HomePage() {
         </MenuContainer>
       </Header>
 
-      <TransactionsContainer 
-        transactions={transactions} 
-        balance={balance} 
+      <TransactionsContainer
+        transactions={transactions}
+        balance={balance}
         onTransactionDeleted={loadTransactions}
+        showImport={showImport}
       />
 
       {showImport && (
